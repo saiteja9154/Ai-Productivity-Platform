@@ -49,7 +49,7 @@ export const createDocument = async (docData, actorId = null) => {
 
 export const updateDocument = async (id, updateData, actorId = null) => {
   const document = await Document.findByIdAndUpdate(id, updateData, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true
   })
     .populate('uploadedBy', 'name email role')

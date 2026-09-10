@@ -58,7 +58,7 @@ export const createTask = async (taskData, actorId = null) => {
 
 export const updateTask = async (id, updateData, actorId = null) => {
   const task = await Task.findByIdAndUpdate(id, updateData, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true
   })
     .populate('assignedTo', 'name email role')

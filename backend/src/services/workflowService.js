@@ -63,7 +63,7 @@ export const createWorkflow = async (workflowData, actorId = null) => {
 
 export const updateWorkflow = async (id, updateData, actorId = null) => {
   const workflow = await Workflow.findByIdAndUpdate(id, updateData, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true
   })
     .populate('createdBy', 'name email role')
@@ -138,7 +138,7 @@ export const updateWorkflowStep = async (workflowId, stepId, updateData, actorId
   const step = await WorkflowStep.findOneAndUpdate(
     { _id: stepId, workflow: workflowId },
     updateData,
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   ).lean();
 
   if (step) {

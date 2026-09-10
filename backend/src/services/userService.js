@@ -43,7 +43,7 @@ export const createUser = async (userData, actorId = null) => {
 
 export const updateUser = async (id, updateData, actorId = null) => {
   const user = await User.findByIdAndUpdate(id, updateData, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true
   })
     .populate('team', 'name description')

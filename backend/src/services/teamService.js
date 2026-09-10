@@ -43,7 +43,7 @@ export const createTeam = async (teamData, actorId = null) => {
 
 export const updateTeam = async (id, updateData, actorId = null) => {
   const team = await Team.findByIdAndUpdate(id, updateData, {
-    new: true,
+    returnDocument: 'after',
     runValidators: true
   })
     .populate('createdBy', 'name email role')
