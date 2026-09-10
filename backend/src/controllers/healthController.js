@@ -2,8 +2,9 @@ import { checkDbConnection } from '../config/db.js';
 
 export const getApiHealth = (req, res) => {
   res.status(200).json({
-    status: 'success',
-    message: 'AI Productivity Platform API is running'
+    success: true,
+    message: 'AI Productivity Platform API is running',
+    timestamp: new Date().toISOString()
   });
 };
 
@@ -12,18 +13,24 @@ export const getDbHealth = async (req, res) => {
 
   if (dbStatus.connected) {
     return res.status(200).json({
-      status: 'success',
+      success: true,
       connected: true,
-      message: 'MySQL Database is connected',
-      database: dbStatus.database
+      message: 'MongoDB Database is connected',
+      database: dbStatus.database,
+      host: dbStatus.host
     });
   }
 
   return res.status(503).json({
-    status: 'error',
+    success: false,
     connected: false,
-    message: 'MySQL Database is disconnected',
-    error: dbStatus.message,
-    code: dbStatus.code
+    message: 'MongoDB Database is disconnected',
+    status: dbStatus.status,
+    database: dbStatus.database
   });
+};
+
+export default {
+  getApiHealth,
+  getDbHealth
 };

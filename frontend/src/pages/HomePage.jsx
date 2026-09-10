@@ -25,7 +25,7 @@ export function HomePage() {
         setBackendStatus({ loading: false, ok: false, message: apiRes.message });
       }
 
-      // 2. Check MySQL Database
+      // 2. Check MongoDB Database
       const dbRes = await checkDbHealth();
       if (dbRes.success && dbRes.connected) {
         setDbStatus({
@@ -106,7 +106,7 @@ export function HomePage() {
             AI Productivity Platform
           </h1>
           <p className="text-slate-400 max-w-xl mx-auto text-base">
-            Foundation architecture verification: Testing end-to-end communication from the React Single Page App to Express API and MySQL Database.
+            Foundation architecture verification: Testing end-to-end communication from the React Single Page App to Express API and MongoDB Database.
           </p>
         </div>
 
@@ -190,7 +190,7 @@ export function HomePage() {
                 )}
               </div>
               <CardTitle className="text-lg font-bold mt-4">Database</CardTitle>
-              <CardDescription className="text-slate-400 text-xs">MySQL 8.0 Connection Pool</CardDescription>
+              <CardDescription className="text-slate-400 text-xs">MongoDB + Mongoose Connection</CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
               <div className="flex items-center text-sm font-semibold">
@@ -240,7 +240,7 @@ export function HomePage() {
               </div>
               <div className="p-3.5 rounded-lg bg-slate-950/80 border border-slate-800 space-y-1">
                 <div className="text-slate-400">Target Database:</div>
-                <div className="text-purple-400 font-semibold">ai_productivity_platform</div>
+                <div className="text-purple-400 font-semibold">ai_productivity_platform (MongoDB)</div>
               </div>
               <div className="p-3.5 rounded-lg bg-slate-950/80 border border-slate-800 space-y-1">
                 <div className="text-slate-400">CORS Whitelist:</div>
@@ -251,13 +251,13 @@ export function HomePage() {
             {dbStatus.error && (
               <div className="p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
                 <div className="font-semibold text-amber-400 flex items-center">
-                  <span>MySQL Configuration Notice:</span>
+                  <span>MongoDB Configuration Notice:</span>
                 </div>
                 <div className="text-slate-300">
                   {dbStatus.error}
                 </div>
                 <div className="text-slate-400 mt-2">
-                  Update <code className="text-amber-300">backend/.env</code> with your local MySQL password (<code className="text-amber-300">DB_PASSWORD</code>), run <code className="text-amber-300">database/schema.sql</code>, then click <strong>Re-check Status</strong>.
+                  Ensure MongoDB is running and update <code className="text-amber-300">backend/.env</code> (<code className="text-amber-300">MONGODB_URI</code>), then click <strong>Re-check Status</strong>.
                 </div>
               </div>
             )}

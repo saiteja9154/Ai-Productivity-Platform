@@ -1,6 +1,6 @@
 # AI Productivity Platform
 
-A production-style full-stack productivity platform built with **React, Vite, Tailwind CSS, shadcn/ui, Node.js, Express.js, MySQL, and JWT Authentication**.
+A production-style full-stack productivity platform built with **React, Vite, Tailwind CSS, shadcn/ui, Node.js, Express.js, MongoDB + Mongoose, and JWT Authentication**.
 
 ---
 
@@ -13,7 +13,7 @@ AI-PRODUCTIVITY-PLATFORM/
 │   │   ├── components/ui/        # Reusable UI components (Button, Card, Badge)
 │   │   ├── layouts/              # Layout wrappers (RootLayout)
 │   │   ├── pages/                # Page views (HomePage / Diagnostics)
-│   │   ├── services/             # API client & health check callers
+│   │   ├── services/             # API client & health check callers (api.js)
 │   │   ├── lib/                  # Utilities (cn helper)
 │   │   ├── App.jsx               # React Router config
 │   │   ├── main.jsx              # Application entry
@@ -25,20 +25,21 @@ AI-PRODUCTIVITY-PLATFORM/
 │   ├── .env.example
 │   └── .env
 │
-├── backend/                      # Node.js + Express REST API
+├── backend/                      # Node.js + Express + MongoDB REST API
 │   ├── src/
-│   │   ├── config/               # MySQL connection pool (db.js)
-│   │   ├── controllers/          # Route controllers (healthController.js)
-│   │   ├── routes/               # Express routes (healthRoutes.js)
-│   │   ├── middleware/           # Error & 404 handlers (errorMiddleware.js)
+│   │   ├── config/               # MongoDB Mongoose connection (db.js)
+│   │   ├── controllers/          # Resource controllers (user, team, document, task, workflow, audit, health)
+│   │   ├── models/               # Mongoose models (User, Team, Document, Task, Workflow, WorkflowStep, AuditLog)
+│   │   ├── routes/               # Express REST routes
+│   │   ├── services/             # Business logic & query services
+│   │   ├── middleware/           # Auth, Validation & Centralized Error Handlers
+│   │   ├── validators/           # express-validator schemas
 │   │   ├── app.js                # Express app & CORS config
 │   │   └── server.js             # Server entry listener
 │   ├── package.json
+│   ├── Dockerfile                # Production Docker container
 │   ├── .env.example
 │   └── .env
-│
-├── database/                     # MySQL database scripts
-│   └── schema.sql                # Table DDL & schema setup
 │
 ├── PHASE_1_ARCHITECTURE.md       # Complete system architecture specification
 ├── .gitignore                    # Git ignore for node_modules and .env files
@@ -50,22 +51,9 @@ AI-PRODUCTIVITY-PLATFORM/
 
 ## 🚀 Installation & Setup
 
-### 1. Database Setup (MySQL)
+### 1. Database Setup (MongoDB)
 
-Ensure MySQL is running on your machine. Create the database and initial tables using MySQL CLI or MySQL Workbench:
-
-```sql
-CREATE DATABASE IF NOT EXISTS ai_productivity_platform;
-USE ai_productivity_platform;
-
--- Execute the schema script:
--- (or run database/schema.sql)
-```
-
-Alternatively, run from terminal:
-```bash
-mysql -u root -p < database/schema.sql
-```
+Ensure MongoDB is running locally (`mongodb://127.0.0.1:27017`) or configure a MongoDB Atlas connection string.
 
 ---
 
@@ -80,11 +68,9 @@ mysql -u root -p < database/schema.sql
 2. Configure environment variables in `backend/.env`:
    ```env
    PORT=5000
-   DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=YOUR_MYSQL_PASSWORD
-   DB_NAME=ai_productivity_platform
-   DB_PORT=3306
+   MONGODB_URI=mongodb://127.0.0.1:27017/ai_productivity_platform
+   JWT_SECRET=dev_jwt_secret_key_productivity_2026
+   NODE_ENV=development
    ```
 
 3. Start the backend development server:
@@ -94,6 +80,7 @@ mysql -u root -p < database/schema.sql
    * The API server runs at `http://localhost:5000`
    * Health Check: `http://localhost:5000/api/health`
    * Database Health: `http://localhost:5000/api/health/db`
+   * API Index: `http://localhost:5000/`
 
 ---
 
@@ -121,16 +108,17 @@ mysql -u root -p < database/schema.sql
 ## 🧪 Testing & Diagnostics
 
 1. **Frontend UI:** Open `http://localhost:5173` to view the live System Diagnostics and connectivity card.
-2. **Backend API:** `GET http://localhost:5000/api/health` returns `{ "status": "success", "message": "..." }`.
-3. **MySQL Connection:** `GET http://localhost:5000/api/health/db` tests the active `mysql2` connection pool.
+2. **Backend API:** `GET http://localhost:5000/api/health` returns `{ "success": true, "message": "..." }`.
+3. **MongoDB Connection:** `GET http://localhost:5000/api/health/db` tests the active Mongoose database connection.
+4. **API Verification Suite:** Run `node test/verify-phase3.js` from `backend/` to test all CRUD modules, validation rules, error handling, and audit logging.
 
 ---
 
 ## 🗺️ Development Roadmap
 
 - [x] **Phase 1 — Planning & Architecture:** System design, database normalization, API specifications in `PHASE_1_ARCHITECTURE.md`.
-- [x] **Phase 2 — Project Setup & UI Foundation:** Express API, MySQL connection pool, Vite/React/Tailwind/shadcn setup, and live health check handshake.
-- [ ] **Phase 3 — Database & Models:** Normalized relational tables and migration scripts.
+- [x] **Phase 2 — Project Setup & UI Foundation:** Express API, Vite/React/Tailwind/shadcn setup, and live health check handshake.
+- [x] **Phase 3 — MongoDB + Mongoose Architecture Migration:** Full layered architecture (Routes -> Middleware -> Controllers -> Services -> Models -> MongoDB), 7 Mongoose models, validation, centralized error handling, and audit logs.
 - [ ] **Phase 4 — Authentication Subsystem:** JWT token generation, bcrypt hashing, and auth middleware.
 - [ ] **Phase 5 — Core Backend APIs:** Projects, Tasks (Kanban), Subtasks, Focus Logs, Analytics.
 - [ ] **Phase 6 — AI Service Integration:** Task breakdown, daily priority planning, note summarizer.

@@ -28,7 +28,7 @@ export async function checkDbHealth() {
       success: res.ok && data.connected,
       connected: data.connected,
       status: data.status,
-      message: data.message || (data.connected ? 'MySQL is connected' : 'MySQL is disconnected'),
+      message: data.message || (data.connected ? 'MongoDB is connected' : 'MongoDB is disconnected'),
       database: data.database,
       error: data.error,
       statusCode: res.status
