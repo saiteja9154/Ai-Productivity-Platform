@@ -85,10 +85,40 @@ export const deleteUser = async (req, res, next) => {
   }
 };
 
+export const getProfile = async (req, res, next) => {
+  try {
+    const userId = req.user?.userId || req.user?.id;
+    const user = await userService.getUserProfile(userId);
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfile = async (req, res, next) => {
+  try {
+    const userId = req.user?.userId || req.user?.id;
+    const user = await userService.updateUserProfile(userId, req.body);
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUsers,
   getUserById,
   createUser,
   updateUser,
-  deleteUser
+  updateProfile,
+  deleteUser,
+  getProfile
 };
+

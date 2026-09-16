@@ -79,10 +79,90 @@ export const deleteUser = async (id, actorId = null) => {
   return user;
 };
 
+export const getUserProfile = async (userId) => {
+  const user = await User.findById(userId)
+    .populate('team', 'name description')
+    .select('-password')
+    .lean();
+
+  if (!user) {
+    const error = new Error('User profile not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return {
+    _id: user._id,
+    userId: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    isActive: user.isActive,
+    team: user.team,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  };
+};
+
+export const updateUserProfile = async (userId, updateData) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    const error = new Error('User not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const updatedFields = [];
+
+  if (updateData.name !== undefined) {
+    user.name = updateData.name.trim();
+    updatedFields.push('name');
+  }
+
+  if (updateData.email !== undefined) {
+    const normalizedEmail = updateData.email.toLowerCase().trim();
+    if (normalizedEmail !== user.email) {
+      const existing = await User.findOne({ email: normalizedEmail, _id: { $ne: userId } });
+      if (existing) {
+        const error = new Error('Email is already in use by another account');
+        error.statusCode = 400;
+        throw error;
+      }
+      user.email = normalizedEmail;
+      updatedFields.push('email');
+    }
+  }
+
+  await user.save();
+
+  await logAuditAction({
+    user: userId,
+    action: 'USER_PROFILE_UPDATED',
+    entityType: 'User',
+    entityId: userId,
+    details: { updatedFields }
+  });
+
+  return {
+    _id: user._id,
+    userId: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    isActive: user.isActive,
+    team: user.team,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  };
+};
+
 export default {
   getAllUsers,
   getUserById,
+  getUserProfile,
   createUser,
   updateUser,
+  updateUserProfile,
   deleteUser
 };
+

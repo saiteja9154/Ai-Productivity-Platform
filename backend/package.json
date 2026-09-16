@@ -7,13 +7,18 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
+    "test": "node test/verify-phase4.js",
+    "test:phase3": "node test/verify-phase3.js",
+    "test:phase4": "node test/verify-phase4.js",
     "test:api": "node test/verify-phase3.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-validator": "^7.3.2",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.5"
   },
   "devDependencies": {

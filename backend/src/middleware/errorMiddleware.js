@@ -39,6 +39,18 @@ export const globalErrorHandler = (err, req, res, next) => {
     message = `Duplicate value entered for field(s): ${duplicatedFields}. Please use unique values.`;
   }
 
+  // Handle JWT Malformed / Invalid Error
+  if (err.name === 'JsonWebTokenError') {
+    statusCode = 401;
+    message = 'Unauthorized. Invalid token.';
+  }
+
+  // Handle JWT Expired Error
+  if (err.name === 'TokenExpiredError') {
+    statusCode = 401;
+    message = 'Unauthorized. Token has expired.';
+  }
+
   // Log server errors for developer inspection
   if (statusCode === 500) {
     console.error('💥 Server Error:', err);

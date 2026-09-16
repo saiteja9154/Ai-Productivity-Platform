@@ -7,6 +7,7 @@ import { notFoundHandler, globalErrorHandler } from './middleware/errorMiddlewar
 
 // Route imports
 import healthRoutes from './routes/healthRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
@@ -41,7 +42,12 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/api/health',
       dbHealth: '/api/health/db',
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login'
+      },
       users: '/api/users',
+      userProfile: 'GET/PUT /api/users/profile',
       teams: '/api/teams',
       documents: '/api/documents',
       tasks: '/api/tasks',
@@ -53,6 +59,7 @@ app.get('/', (req, res) => {
 
 // Mount Resource API Routes
 app.use('/api/health', healthRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/documents', documentRoutes);
