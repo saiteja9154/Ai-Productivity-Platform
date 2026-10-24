@@ -1,14 +1,23 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import app from './app.js';
-import { connectDB } from './config/db.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Explicitly load backend/.env before importing app or config
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config();
+
+import app from './app.js';
+import { connectDB, disconnectDB, sanitizeMongoUri } from './config/db.js';
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   try {
-    // 1. Connect to MongoDB before accepting traffic
+    // 1. Connect to MongoDB before listening for HTTP requests
+    console.log('⏳ Connecting to MongoDB...');
     await connectDB();
 
     // 2. Start Express Server
@@ -24,8 +33,13 @@ const startServer = async () => {
     // Graceful shutdown handling
     const gracefulShutdown = (signal) => {
       console.log(`\nReceived ${signal}. Shutting down gracefully...`);
-      server.close(() => {
+      server.close(async () => {
         console.log('HTTP server closed.');
+        try {
+          await disconnectDB();
+        } catch (dbErr) {
+          console.error('Error during DB disconnect:', dbErr.message);
+        }
         process.exit(0);
       });
     };
@@ -33,12 +47,11 @@ const startServer = async () => {
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
   } catch (error) {
-    console.error(`❌ Failed to start server: ${error.message}`);
-    console.warn(`💡 Ensure MongoDB is running and MONGODB_URI is configured in backend/.env`);
-    // Start server in degraded mode to allow health checks to report DB status
-    app.listen(PORT, () => {
-      console.log(`⚠️ Server running in degraded mode on http://localhost:${PORT} (Database offline)`);
-    });
+    const rawUri = process.env.MONGODB_URI || '';
+    const sanitized = sanitizeMongoUri(rawUri);
+    console.error(`❌ Failed to start server: MongoDB connection error (${sanitized}) - ${error.message}`);
+    console.error(`💡 Ensure MongoDB service is running and MONGODB_URI is correctly configured in backend/.env`);
+    process.exit(1);
   }
 };
 
@@ -48,3 +61,4 @@ startServer();
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Promise Rejection:', err);
 });
+
