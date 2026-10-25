@@ -6,7 +6,20 @@ export const getTasks = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: tasks.length,
-      data: tasks
+      data: tasks,
+      pagination: tasks.pagination || null
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTaskMetrics = async (req, res, next) => {
+  try {
+    const metrics = await taskService.getTaskMetrics(req.query);
+    res.status(200).json({
+      success: true,
+      data: metrics
     });
   } catch (error) {
     next(error);
@@ -33,7 +46,7 @@ export const getTaskById = async (req, res, next) => {
 
 export const createTask = async (req, res, next) => {
   try {
-    const actorId = req.user?.id || null;
+    const actorId = req.user?.userId || req.user?.id || req.user?._id || null;
     const task = await taskService.createTask(req.body, actorId);
     res.status(201).json({
       success: true,
@@ -47,7 +60,7 @@ export const createTask = async (req, res, next) => {
 
 export const updateTask = async (req, res, next) => {
   try {
-    const actorId = req.user?.id || null;
+    const actorId = req.user?.userId || req.user?.id || req.user?._id || null;
     const task = await taskService.updateTask(req.params.id, req.body, actorId);
     if (!task) {
       return res.status(404).json({
@@ -65,9 +78,30 @@ export const updateTask = async (req, res, next) => {
   }
 };
 
+export const updateTaskStatus = async (req, res, next) => {
+  try {
+    const actorId = req.user?.userId || req.user?.id || req.user?._id || null;
+    const { status } = req.body;
+    const task = await taskService.updateTaskStatus(req.params.id, status, actorId);
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: `Task not found with id: ${req.params.id}`
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Task status updated successfully',
+      data: task
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteTask = async (req, res, next) => {
   try {
-    const actorId = req.user?.id || null;
+    const actorId = req.user?.userId || req.user?.id || req.user?._id || null;
     const task = await taskService.deleteTask(req.params.id, actorId);
     if (!task) {
       return res.status(404).json({
@@ -87,8 +121,10 @@ export const deleteTask = async (req, res, next) => {
 
 export default {
   getTasks,
+  getTaskMetrics,
   getTaskById,
   createTask,
   updateTask,
+  updateTaskStatus,
   deleteTask
 };

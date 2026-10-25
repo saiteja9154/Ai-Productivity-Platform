@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
 
+const VALID_STATUSES = ['todo', 'in-progress', 'completed', 'pending', 'TODO', 'IN_PROGRESS', 'COMPLETED'];
+const VALID_PRIORITIES = ['low', 'medium', 'high', 'urgent', 'LOW', 'MEDIUM', 'HIGH', 'URGENT'];
+
 const taskSchema = new mongoose.Schema(
   {
     title: {
@@ -17,6 +20,11 @@ const taskSchema = new mongoose.Schema(
       ref: 'User',
       default: null
     },
+    assignee: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -29,15 +37,19 @@ const taskSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'in-progress', 'completed'],
-      default: 'pending'
+      enum: VALID_STATUSES,
+      default: 'todo'
     },
     priority: {
       type: String,
-      enum: ['low', 'medium', 'high'],
+      enum: VALID_PRIORITIES,
       default: 'medium'
     },
     dueDate: {
+      type: Date,
+      default: null
+    },
+    deadline: {
       type: Date,
       default: null
     },
@@ -51,6 +63,45 @@ const taskSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+// Synchronize aliases (assignee <-> assignedTo, deadline <-> dueDate) and normalize status/priority
+taskSchema.pre('save', function () {
+  // Sync assignee and assignedTo
+  if (this.assignee && !this.assignedTo) {
+    this.assignedTo = this.assignee;
+  } else if (this.assignedTo && !this.assignee) {
+    this.assignee = this.assignedTo;
+  }
+
+  // Sync deadline and dueDate
+  if (this.deadline && !this.dueDate) {
+    this.dueDate = this.deadline;
+  } else if (this.dueDate && !this.deadline) {
+    this.deadline = this.dueDate;
+  }
+
+  // Normalize status
+  if (this.status) {
+    const s = this.status.toLowerCase().replace('_', '-');
+    if (s === 'pending') this.status = 'todo';
+    else this.status = s;
+  }
+
+  // Normalize priority
+  if (this.priority) {
+    this.priority = this.priority.toLowerCase();
+  }
+});
+
+// Indexes for query performance
+taskSchema.index({ team: 1, status: 1 });
+taskSchema.index({ assignedTo: 1 });
+taskSchema.index({ assignee: 1 });
+taskSchema.index({ createdBy: 1 });
+taskSchema.index({ priority: 1 });
+taskSchema.index({ dueDate: 1 });
+taskSchema.index({ deadline: 1 });
+taskSchema.index({ createdAt: -1 });
 
 const Task = mongoose.model('Task', taskSchema);
 

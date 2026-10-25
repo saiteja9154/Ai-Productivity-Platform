@@ -23,6 +23,9 @@ const teamSchema = new mongoose.Schema(
   }
 );
 
+teamSchema.index({ name: 1 });
+teamSchema.index({ createdBy: 1 });
+
 const Team = mongoose.model('Team', teamSchema);
 
 export default Team;

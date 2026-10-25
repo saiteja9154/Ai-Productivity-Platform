@@ -33,6 +33,9 @@ const workflowSchema = new mongoose.Schema(
   }
 );
 
+workflowSchema.index({ team: 1, status: 1 });
+workflowSchema.index({ createdBy: 1 });
+
 const Workflow = mongoose.model('Workflow', workflowSchema);
 
 export default Workflow;

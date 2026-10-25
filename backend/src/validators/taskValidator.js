@@ -1,5 +1,8 @@
 import { body, param } from 'express-validator';
 
+const STATUS_VALUES = ['todo', 'in-progress', 'completed', 'pending', 'TODO', 'IN_PROGRESS', 'COMPLETED'];
+const PRIORITY_VALUES = ['low', 'medium', 'high', 'urgent', 'LOW', 'MEDIUM', 'HIGH', 'URGENT'];
+
 export const validateTaskId = [
   param('id')
     .isMongoId()
@@ -22,6 +25,10 @@ export const validateCreateTask = [
     .optional({ nullable: true })
     .isMongoId()
     .withMessage('Invalid Assigned User ID format'),
+  body('assignee')
+    .optional({ nullable: true })
+    .isMongoId()
+    .withMessage('Invalid Assignee User ID format'),
   body('createdBy')
     .optional({ nullable: true })
     .isMongoId()
@@ -32,16 +39,20 @@ export const validateCreateTask = [
     .withMessage('Invalid Team ID format'),
   body('status')
     .optional()
-    .isIn(['pending', 'in-progress', 'completed'])
-    .withMessage('Status must be one of: pending, in-progress, completed'),
+    .isIn(STATUS_VALUES)
+    .withMessage('Status must be one of: todo, in-progress, completed (or pending)'),
   body('priority')
     .optional()
-    .isIn(['low', 'medium', 'high'])
-    .withMessage('Priority must be one of: low, medium, high'),
+    .isIn(PRIORITY_VALUES)
+    .withMessage('Priority must be one of: low, medium, high, urgent'),
   body('dueDate')
     .optional({ nullable: true })
     .isISO8601()
     .withMessage('Due date must be a valid ISO8601 date string'),
+  body('deadline')
+    .optional({ nullable: true })
+    .isISO8601()
+    .withMessage('Deadline must be a valid ISO8601 date string'),
   body('relatedDocument')
     .optional({ nullable: true })
     .isMongoId()
@@ -68,6 +79,10 @@ export const validateUpdateTask = [
     .optional({ nullable: true })
     .isMongoId()
     .withMessage('Invalid Assigned User ID format'),
+  body('assignee')
+    .optional({ nullable: true })
+    .isMongoId()
+    .withMessage('Invalid Assignee User ID format'),
   body('createdBy')
     .optional({ nullable: true })
     .isMongoId()
@@ -78,18 +93,40 @@ export const validateUpdateTask = [
     .withMessage('Invalid Team ID format'),
   body('status')
     .optional()
-    .isIn(['pending', 'in-progress', 'completed'])
-    .withMessage('Status must be one of: pending, in-progress, completed'),
+    .isIn(STATUS_VALUES)
+    .withMessage('Status must be one of: todo, in-progress, completed (or pending)'),
   body('priority')
     .optional()
-    .isIn(['low', 'medium', 'high'])
-    .withMessage('Priority must be one of: low, medium, high'),
+    .isIn(PRIORITY_VALUES)
+    .withMessage('Priority must be one of: low, medium, high, urgent'),
   body('dueDate')
     .optional({ nullable: true })
     .isISO8601()
     .withMessage('Due date must be a valid ISO8601 date string'),
+  body('deadline')
+    .optional({ nullable: true })
+    .isISO8601()
+    .withMessage('Deadline must be a valid ISO8601 date string'),
   body('relatedDocument')
     .optional({ nullable: true })
     .isMongoId()
     .withMessage('Invalid Related Document ID format')
 ];
+
+export const validateTaskStatus = [
+  param('id')
+    .isMongoId()
+    .withMessage('Invalid Task ID format'),
+  body('status')
+    .notEmpty()
+    .withMessage('Status is required')
+    .isIn(STATUS_VALUES)
+    .withMessage('Status must be one of: todo, in-progress, completed (or pending)')
+];
+
+export default {
+  validateTaskId,
+  validateCreateTask,
+  validateUpdateTask,
+  validateTaskStatus
+};
