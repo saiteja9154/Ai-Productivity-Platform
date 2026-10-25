@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { Toaster } from 'sonner';
 
 export function RootLayout() {
   return (
@@ -9,6 +10,7 @@ export function RootLayout() {
       <div className="flex-1 flex flex-col">
         <Outlet />
       </div>
+      <Toaster richColors position="top-right" theme="dark" />
     </div>
   );
 }
