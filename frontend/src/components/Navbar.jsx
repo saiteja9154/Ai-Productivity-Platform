@@ -1,17 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
-import { Sparkles, User as UserIcon, LogOut, LayoutDashboard, FileText, CheckSquare, GitFork, LogIn } from 'lucide-react';
+import { 
+  Sparkles, 
+  User as UserIcon, 
+  LogOut, 
+  LayoutDashboard, 
+  FileText, 
+  CheckSquare, 
+  GitFork, 
+  LogIn, 
+  UserPlus, 
+  Menu, 
+  X 
+} from 'lucide-react';
 
 export function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
+    setMobileMenuOpen(false);
     navigate('/login');
   };
 
@@ -19,15 +33,17 @@ export function Navbar() {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Documents', path: '/documents', icon: FileText },
     { name: 'Tasks', path: '/tasks', icon: CheckSquare },
-    { name: 'Workflows', path: '/workflows', icon: GitFork }
+    ...(isAuthenticated ? [{ name: 'Workflows', path: '/workflows', icon: GitFork }] : [])
   ];
+
+  const closeMenu = () => setMobileMenuOpen(false);
 
   return (
     <header className="border-b border-slate-800/80 backdrop-blur-md bg-slate-950/80 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
+        {/* Brand Logo & Desktop Nav Links */}
         <div className="flex items-center space-x-6">
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" onClick={closeMenu} className="flex items-center space-x-3 group">
             <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
               <Sparkles className="h-5 w-5 text-white" />
             </div>
@@ -38,33 +54,31 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Authenticated Navigation Links */}
-          {isAuthenticated && (
-            <nav className="hidden md:flex items-center space-x-1">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                const isActive = location.pathname === link.path;
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                      isActive
-                        ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{link.name}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          )}
+          {/* Desktop Accessible Navigation Links */}
+          <nav className="hidden md:flex items-center space-x-1">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = location.pathname === link.path;
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                    isActive
+                      ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span>{link.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
         {/* User Context & Actions */}
-        <div className="flex items-center space-x-3">
+        <div className="hidden md:flex items-center space-x-3">
           {isAuthenticated ? (
             <div className="flex items-center space-x-3">
               <Link
@@ -78,7 +92,7 @@ export function Navbar() {
                 <div className="h-6 w-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
                   <UserIcon className="h-3.5 w-3.5" />
                 </div>
-                <span className="hidden sm:inline-block font-semibold">{user?.name || 'User'}</span>
+                <span className="font-semibold">{user?.name || 'User'}</span>
                 <Badge variant={user?.role === 'admin' ? 'success' : 'secondary'} className="text-[10px] px-1.5 py-0">
                   {user?.role || 'user'}
                 </Badge>
@@ -105,13 +119,97 @@ export function Navbar() {
               </Link>
               <Link to="/signup">
                 <Button size="sm" className="text-xs bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30">
+                  <UserPlus className="h-3.5 w-3.5 mr-1.5" />
                   Sign Up
                 </Button>
               </Link>
             </div>
           )}
         </div>
+
+        {/* Mobile Hamburger Button */}
+        <div className="flex md:hidden items-center space-x-2">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 rounded-lg bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white focus:outline-none"
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-800 bg-slate-950/95 px-4 pt-3 pb-5 space-y-3 shadow-2xl backdrop-blur-xl">
+          <div className="space-y-1">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const isActive = location.pathname === link.path;
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={closeMenu}
+                  className={`flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-colors ${
+                    isActive
+                      ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-900'
+                  }`}
+                >
+                  <Icon className="h-4 w-4 text-indigo-400" />
+                  <span>{link.name}</span>
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="pt-3 border-t border-slate-800 space-y-2">
+            {isAuthenticated ? (
+              <div className="space-y-2">
+                <Link
+                  to="/profile"
+                  onClick={closeMenu}
+                  className="flex items-center justify-between px-3 py-2 rounded-lg bg-slate-900/80 border border-slate-800 text-xs text-slate-200"
+                >
+                  <div className="flex items-center space-x-2">
+                    <UserIcon className="h-4 w-4 text-indigo-400" />
+                    <span>{user?.name || 'User Profile'}</span>
+                  </div>
+                  <Badge variant={user?.role === 'admin' ? 'success' : 'secondary'} className="text-[10px]">
+                    {user?.role || 'user'}
+                  </Badge>
+                </Link>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="w-full justify-center border-slate-800 bg-slate-900/60 text-rose-300 hover:bg-rose-950/40 hover:border-rose-800 text-xs py-2"
+                >
+                  <LogOut className="h-3.5 w-3.5 mr-1.5" />
+                  <span>Logout</span>
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link to="/login" onClick={closeMenu}>
+                  <Button variant="outline" size="sm" className="w-full text-xs border-slate-800 text-slate-300">
+                    <LogIn className="h-3.5 w-3.5 mr-1.5" />
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/signup" onClick={closeMenu}>
+                  <Button size="sm" className="w-full text-xs bg-indigo-600 hover:bg-indigo-500 text-white">
+                    <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
