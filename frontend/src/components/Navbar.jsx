@@ -11,6 +11,7 @@ import {
   FileText, 
   CheckSquare, 
   GitFork, 
+  Bot,
   LogIn, 
   UserPlus, 
   Menu, 
@@ -33,7 +34,10 @@ export function Navbar() {
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Documents', path: '/documents', icon: FileText },
     { name: 'Tasks', path: '/tasks', icon: CheckSquare },
-    ...(isAuthenticated ? [{ name: 'Workflows', path: '/workflows', icon: GitFork }] : [])
+    ...(isAuthenticated ? [
+      { name: 'Workflows', path: '/workflows', icon: GitFork },
+      { name: 'AI Studio', path: '/ai', icon: Bot }
+    ] : [])
   ];
 
   const closeMenu = () => setMobileMenuOpen(false);

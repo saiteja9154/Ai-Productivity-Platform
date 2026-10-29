@@ -348,6 +348,214 @@ export async function getWorkflowById(id) {
   return data;
 }
 
+export async function createWorkflow(payload) {
+  const res = await fetch(`${API_BASE_URL}/api/workflows`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to create workflow (${res.status})`);
+  }
+  return data;
+}
+
+export async function updateWorkflow(id, payload) {
+  const res = await fetch(`${API_BASE_URL}/api/workflows/${id}`, {
+    method: 'PATCH',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to update workflow (${res.status})`);
+  }
+  return data;
+}
+
+export async function deleteWorkflow(id) {
+  const res = await fetch(`${API_BASE_URL}/api/workflows/${id}`, {
+    method: 'DELETE',
+    headers: getRequestHeaders()
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to delete workflow (${res.status})`);
+  }
+  return data;
+}
+
+export async function activateWorkflow(id) {
+  const res = await fetch(`${API_BASE_URL}/api/workflows/${id}/activate`, {
+    method: 'POST',
+    headers: getRequestHeaders()
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to activate workflow (${res.status})`);
+  }
+  return data;
+}
+
+export async function deactivateWorkflow(id) {
+  const res = await fetch(`${API_BASE_URL}/api/workflows/${id}/deactivate`, {
+    method: 'POST',
+    headers: getRequestHeaders()
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to deactivate workflow (${res.status})`);
+  }
+  return data;
+}
+
+export async function runWorkflow(id, payload = {}) {
+  const res = await fetch(`${API_BASE_URL}/api/workflows/${id}/run`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to run workflow (${res.status})`);
+  }
+  return data;
+}
+
+export async function getWorkflowExecutions(id, params = {}) {
+  const res = await fetch(buildUrl(`/api/workflows/${id}/executions`, params), {
+    method: 'GET',
+    headers: getRequestHeaders()
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to fetch executions (${res.status})`);
+  }
+  return data;
+}
+
+export async function getExecutionById(executionId) {
+  const res = await fetch(`${API_BASE_URL}/api/workflows/executions/${executionId}`, {
+    method: 'GET',
+    headers: getRequestHeaders()
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to fetch execution detail (${res.status})`);
+  }
+  return data;
+}
+
+/**
+ * Local AI API (Zero External Keys, Deterministic Backend Services)
+ */
+export async function aiChat(payload) {
+  const res = await fetch(`${API_BASE_URL}/api/ai/chat`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(typeof payload === 'string' ? { message: payload } : payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `AI Chat request failed (${res.status})`);
+  }
+  return data;
+}
+
+export async function aiSummarize(payload) {
+  const res = await fetch(`${API_BASE_URL}/api/ai/summarize`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(typeof payload === 'string' ? { text: payload } : payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Summarization failed (${res.status})`);
+  }
+  return data;
+}
+
+export async function aiExtractTasks(payload) {
+  const res = await fetch(`${API_BASE_URL}/api/ai/extract-tasks`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(typeof payload === 'string' ? { text: payload } : payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Task extraction failed (${res.status})`);
+  }
+  return data;
+}
+
+export async function aiProcessMeetingNotes(payload) {
+  const res = await fetch(`${API_BASE_URL}/api/ai/process-meeting-notes`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(typeof payload === 'string' ? { text: payload } : payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Meeting notes processing failed (${res.status})`);
+  }
+  return data;
+}
+
+export async function aiConfirmMeetingTasks(tasks) {
+  const res = await fetch(`${API_BASE_URL}/api/ai/confirm-meeting-tasks`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify({ tasks })
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Failed to confirm tasks (${res.status})`);
+  }
+  return data;
+}
+
+export async function aiGenerateEmail(payload) {
+  const res = await fetch(`${API_BASE_URL}/api/ai/generate-email`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Email generation failed (${res.status})`);
+  }
+  return data;
+}
+
+export async function aiGenerateContent(payload) {
+  const res = await fetch(`${API_BASE_URL}/api/ai/generate-content`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.message || `Content generation failed (${res.status})`);
+  }
+  return data;
+}
+
 /**
  * Users API
  */
@@ -408,6 +616,22 @@ export default {
   getTeams,
   getWorkflows,
   getWorkflowById,
+  createWorkflow,
+  updateWorkflow,
+  deleteWorkflow,
+  activateWorkflow,
+  deactivateWorkflow,
+  runWorkflow,
+  getWorkflowExecutions,
+  getExecutionById,
+  aiChat,
+  aiSummarize,
+  aiExtractTasks,
+  aiProcessMeetingNotes,
+  aiConfirmMeetingTasks,
+  aiGenerateEmail,
+  aiGenerateContent,
   getUsers,
   getDashboardSummary
 };
+

@@ -13,6 +13,7 @@ import Profile from './pages/Profile';
 import Documents from './pages/Documents';
 import Tasks from './pages/Tasks';
 import Workflows from './pages/Workflows';
+import AIAssistant from './pages/AIAssistant';
 
 export function App() {
   return (
@@ -65,6 +66,18 @@ export function App() {
                   <Workflows />
                 </ProtectedRoute>
               }
+            />
+            <Route
+              path="ai"
+              element={
+                <ProtectedRoute>
+                  <AIAssistant />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="ai-assistant"
+              element={<Navigate to="/ai" replace />}
             />
 
             {/* Fallback */}

@@ -3,6 +3,7 @@ import path from 'path';
 import Document from '../models/Document.js';
 import { UPLOADS_DIR } from '../middleware/uploadMiddleware.js';
 import { logAuditAction } from './auditService.js';
+import { triggerWorkflows } from './workflowEngine.js';
 
 /**
  * Retrieve documents with server-side search, filtering, and pagination
@@ -169,6 +170,11 @@ export const uploadDocument = async (file, metaData = {}, actorId = null) => {
       fileSize: file.size,
       mimeType: file.mimetype
     }
+  });
+
+  // Asynchronously dispatch document_uploaded workflows
+  triggerWorkflows('document_uploaded', populatedDoc, actorId).catch(err => {
+    console.error('Workflow document_uploaded trigger dispatch error:', err.message);
   });
 
   return populatedDoc;

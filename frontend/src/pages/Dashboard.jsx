@@ -18,7 +18,8 @@ import {
   Database,
   RefreshCw,
   Clock,
-  AlertCircle
+  AlertCircle,
+  Bot
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -94,13 +95,23 @@ export function Dashboard() {
     },
     {
       title: 'Workflows Module',
-      description: 'Automated multi-step workflows with AI agent executions and conditions',
+      description: 'Automated multi-step pipelines with deterministic triggers and execution history',
       icon: GitFork,
       path: '/workflows',
       count: data.workflows.length,
       countLabel: 'Workflows in DB',
       color: 'from-purple-500/20 to-pink-500/20 text-purple-400 border-purple-500/30',
-      badge: 'API Connected'
+      badge: 'Automation Active'
+    },
+    {
+      title: 'AI Studio & Assistant',
+      description: 'Local deterministic AI: rule-based chat, document summarizer, meeting notes to tasks, email drafts',
+      icon: Bot,
+      path: '/ai',
+      count: 'Local',
+      countLabel: 'Zero External Keys',
+      color: 'from-indigo-500/20 to-purple-500/20 text-indigo-400 border-indigo-500/30',
+      badge: 'Zero API Keys'
     }
   ];
 

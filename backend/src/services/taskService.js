@@ -1,5 +1,6 @@
 import Task from '../models/Task.js';
 import { logAuditAction } from './auditService.js';
+import { triggerWorkflows } from './workflowEngine.js';
 
 /**
  * Retrieve tasks with server-side search, filtering, sorting, and pagination
@@ -170,6 +171,11 @@ export const createTask = async (taskData, actorId = null) => {
     details: { title: task.title, status: task.status, priority: task.priority }
   });
 
+  // Asynchronously dispatch task_created workflows
+  triggerWorkflows('task_created', populatedTask, actorId).catch(err => {
+    console.error('Workflow task_created trigger dispatch error:', err.message);
+  });
+
   return populatedTask;
 };
 
@@ -217,6 +223,12 @@ export const updateTask = async (id, updateData, actorId = null) => {
       entityId: id,
       details: { updatedFields: Object.keys(safeData) }
     });
+
+    if (task.status === 'completed') {
+      triggerWorkflows('task_completed', task, actorId).catch(err => {
+        console.error('Workflow task_completed trigger dispatch error:', err.message);
+      });
+    }
   }
 
   return task;
@@ -249,6 +261,12 @@ export const updateTaskStatus = async (id, newStatus, actorId = null) => {
       entityId: id,
       details: { newStatus: targetStatus }
     });
+
+    if (targetStatus === 'completed') {
+      triggerWorkflows('task_completed', task, actorId).catch(err => {
+        console.error('Workflow task_completed trigger dispatch error:', err.message);
+      });
+    }
   }
 
   return task;

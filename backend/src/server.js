@@ -11,6 +11,7 @@ dotenv.config();
 
 import app from './app.js';
 import { connectDB, disconnectDB, sanitizeMongoUri } from './config/db.js';
+import { startScheduler, stopScheduler } from './services/workflowScheduler.js';
 
 const PORT = process.env.PORT || 5000;
 
@@ -20,19 +21,24 @@ const startServer = async () => {
     console.log('⏳ Connecting to MongoDB...');
     await connectDB();
 
-    // 2. Start Express Server
+    // 2. Start lightweight workflow scheduler for scheduled triggers
+    startScheduler();
+
+    // 3. Start Express Server
     const server = app.listen(PORT, () => {
       console.log(`=========================================`);
       console.log(`🚀 Server running on http://localhost:${PORT}`);
       console.log(`📡 Health Check: http://localhost:${PORT}/api/health`);
       console.log(`🗄️  DB Check:     http://localhost:${PORT}/api/health/db`);
       console.log(`📊 API Docs:     http://localhost:${PORT}/`);
+      console.log(`⚙️  Workflows:   Scheduler active (single-instance safe)`);
       console.log(`=========================================`);
     });
 
     // Graceful shutdown handling
     const gracefulShutdown = (signal) => {
       console.log(`\nReceived ${signal}. Shutting down gracefully...`);
+      stopScheduler();
       server.close(async () => {
         console.log('HTTP server closed.');
         try {

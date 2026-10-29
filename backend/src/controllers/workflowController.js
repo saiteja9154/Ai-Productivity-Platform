@@ -2,7 +2,8 @@ import workflowService from '../services/workflowService.js';
 
 export const getWorkflows = async (req, res, next) => {
   try {
-    const workflows = await workflowService.getAllWorkflows(req.query);
+    const actorId = req.user?.id || null;
+    const workflows = await workflowService.getAllWorkflows(req.query, actorId);
     res.status(200).json({
       success: true,
       count: workflows.length,
@@ -15,7 +16,8 @@ export const getWorkflows = async (req, res, next) => {
 
 export const getWorkflowById = async (req, res, next) => {
   try {
-    const workflow = await workflowService.getWorkflowById(req.params.id);
+    const actorId = req.user?.id || null;
+    const workflow = await workflowService.getWorkflowById(req.params.id, actorId);
     if (!workflow) {
       return res.status(404).json({
         success: false,
@@ -85,10 +87,95 @@ export const deleteWorkflow = async (req, res, next) => {
   }
 };
 
+export const activateWorkflow = async (req, res, next) => {
+  try {
+    const actorId = req.user?.id || null;
+    const workflow = await workflowService.activateWorkflow(req.params.id, actorId);
+    res.status(200).json({
+      success: true,
+      message: 'Workflow activated successfully',
+      data: workflow
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deactivateWorkflow = async (req, res, next) => {
+  try {
+    const actorId = req.user?.id || null;
+    const workflow = await workflowService.deactivateWorkflow(req.params.id, actorId);
+    res.status(200).json({
+      success: true,
+      message: 'Workflow deactivated successfully',
+      data: workflow
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const runWorkflow = async (req, res, next) => {
+  try {
+    const actorId = req.user?.id || null;
+    const result = await workflowService.runWorkflow(req.params.id, actorId, req.body);
+    res.status(200).json({
+      success: true,
+      message: 'Workflow executed successfully',
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getWorkflowExecutions = async (req, res, next) => {
+  try {
+    const actorId = req.user?.id || req.user?._id?.toString() || null;
+    const userRole = req.user?.role || null;
+    const result = await workflowService.getWorkflowExecutions(req.params.id, req.query, actorId, userRole);
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: `Workflow not found with id: ${req.params.id}`
+      });
+    }
+    res.status(200).json({
+      success: true,
+      count: result.executions?.length || 0,
+      data: result.executions || [],
+      pagination: result.pagination
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getExecutionById = async (req, res, next) => {
+  try {
+    const actorId = req.user?.id || req.user?._id?.toString() || null;
+    const userRole = req.user?.role || null;
+    const execution = await workflowService.getExecutionById(req.params.executionId, actorId, userRole);
+    if (!execution) {
+      return res.status(404).json({
+        success: false,
+        message: `Execution not found with id: ${req.params.executionId}`
+      });
+    }
+    res.status(200).json({
+      success: true,
+      data: execution
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Workflow Steps
 export const getWorkflowSteps = async (req, res, next) => {
   try {
-    const steps = await workflowService.getWorkflowSteps(req.params.id);
+    const actorId = req.user?.id || null;
+    const steps = await workflowService.getWorkflowSteps(req.params.id, actorId);
     res.status(200).json({
       success: true,
       count: steps.length,
@@ -174,8 +261,14 @@ export default {
   createWorkflow,
   updateWorkflow,
   deleteWorkflow,
+  activateWorkflow,
+  deactivateWorkflow,
+  runWorkflow,
+  getWorkflowExecutions,
+  getExecutionById,
   getWorkflowSteps,
   addWorkflowStep,
   updateWorkflowStep,
   deleteWorkflowStep
 };
+

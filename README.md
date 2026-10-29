@@ -148,7 +148,7 @@ AI-PRODUCTIVITY-PLATFORM/
 ├── frontend/                               # React 19 Client Application
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── ui/                         # shadcn/ui primitive components
+│   │   │   ├── ui/                         # Design-system primitive components
 │   │   │   │   ├── Badge.jsx               # Status indicators & pills
 │   │   │   │   ├── Button.jsx              # Interactive button variants
 │   │   │   │   └── Card.jsx                # Glassmorphic container cards
@@ -158,21 +158,26 @@ AI-PRODUCTIVITY-PLATFORM/
 │   │   │   └── AuthContext.jsx             # Global user session provider
 │   │   ├── layouts/
 │   │   │   └── RootLayout.jsx              # Shell layout with top navigation
+│   │   ├── lib/
+│   │   │   └── utils.js                    # Utility helpers (clsx & twMerge)
 │   │   ├── pages/
 │   │   │   ├── HomePage.jsx                # Diagnostic connectivity hub
 │   │   │   ├── Login.jsx                   # User authentication view
 │   │   │   ├── Signup.jsx                  # Account registration view
 │   │   │   ├── Dashboard.jsx               # Authenticated control panel
 │   │   │   ├── Profile.jsx                 # Profile management & edit view
-│   │   │   ├── Documents.jsx               # Documents module placeholder
-│   │   │   ├── Tasks.jsx                   # Tasks module placeholder
-│   │   │   └── Workflows.jsx               # Workflows module placeholder
+│   │   │   ├── Documents.jsx               # Versioned documents & attachments
+│   │   │   ├── Tasks.jsx                   # Sprint board (Kanban & list views)
+│   │   │   ├── Workflows.jsx               # Autonomous workflow designer & execution
+│   │   │   └── AIAssistant.jsx             # Rule-based AI workspace assistant
 │   │   ├── services/
-│   │   │   ├── api.js                      # Diagnostic health endpoints
+│   │   │   ├── api.js                      # Diagnostic health & core API endpoints
 │   │   │   └── authService.js              # Token management & Auth HTTP client
 │   │   ├── App.jsx                         # React Router route registry
 │   │   ├── main.jsx                        # Application root render
 │   │   └── index.css                       # Tailwind design tokens & base rules
+│   ├── public/
+│   │   └── favicon.svg                     # Application favicon
 │   ├── index.html                          # HTML template
 │   ├── vite.config.js                      # Vite bundler configuration
 │   ├── tailwind.config.js                  # Tailwind utility definitions
@@ -190,10 +195,12 @@ AI-PRODUCTIVITY-PLATFORM/
 │   │   │   ├── taskController.js           # Task state machine handlers
 │   │   │   ├── workflowController.js       # Workflow execution handlers
 │   │   │   ├── auditController.js          # Audit log retrieval handlers
+│   │   │   ├── aiController.js             # AI chat, summarizer & task extraction
 │   │   │   └── healthController.js         # Service & DB health probes
 │   │   ├── middleware/
 │   │   │   ├── authMiddleware.js           # Bearer JWT verification & context
 │   │   │   ├── roleMiddleware.js           # Role authorization guard (RBAC)
+│   │   │   ├── uploadMiddleware.js         # Multer attachment upload security
 │   │   │   ├── validationMiddleware.js     # express-validator response wrapper
 │   │   │   └── errorMiddleware.js          # Centralized error handler & 404
 │   │   ├── models/
@@ -203,6 +210,7 @@ AI-PRODUCTIVITY-PLATFORM/
 │   │   │   ├── Task.js                     # State-driven task model
 │   │   │   ├── Workflow.js                 # Automation workflow schema
 │   │   │   ├── WorkflowStep.js             # Atomic workflow action step
+│   │   │   ├── WorkflowExecution.js        # Workflow run telemetry & step logs
 │   │   │   └── AuditLog.js                 # Immutable activity ledger
 │   │   ├── routes/
 │   │   │   ├── authRoutes.js               # /api/auth routes
@@ -211,6 +219,7 @@ AI-PRODUCTIVITY-PLATFORM/
 │   │   │   ├── documentRoutes.js           # /api/documents routes
 │   │   │   ├── taskRoutes.js               # /api/tasks routes
 │   │   │   ├── workflowRoutes.js           # /api/workflows routes
+│   │   │   ├── aiRoutes.js                 # /api/ai routes
 │   │   │   ├── auditRoutes.js              # /api/audit-logs routes
 │   │   │   └── healthRoutes.js             # /api/health routes
 │   │   ├── services/
@@ -220,6 +229,9 @@ AI-PRODUCTIVITY-PLATFORM/
 │   │   │   ├── documentService.js          # Document persistence logic
 │   │   │   ├── taskService.js              # Task filtering & updates
 │   │   │   ├── workflowService.js          # Workflow sequence manager
+│   │   │   ├── workflowEngine.js           # Ordered step runner & action executors
+│   │   │   ├── workflowScheduler.js        # Scheduled interval trigger dispatcher
+│   │   │   ├── aiService.js                # NLP summarizer, task generator & advice
 │   │   │   └── auditService.js             # Centralized audit logger
 │   │   ├── utils/
 │   │   │   └── jwt.js                      # JWT generation & validation
@@ -230,15 +242,25 @@ AI-PRODUCTIVITY-PLATFORM/
 │   │   │   ├── documentValidator.js        # Document validators
 │   │   │   ├── taskValidator.js            # Task status & priority validators
 │   │   │   └── workflowValidator.js        # Workflow step validators
+│   │   ├── scripts/
+│   │   │   └── seed.js                     # Comprehensive database seeder
 │   │   ├── app.js                          # Express application assembly
 │   │   └── server.js                       # HTTP server entry point
 │   ├── test/
 │   │   ├── verify-phase3.js                # Phase 3 database regression suite
-│   │   └── verify-phase4.js                # Phase 4 authentication suite
+│   │   ├── verify-phase4.js                # Phase 4 authentication suite
+│   │   ├── verify-phase5.js                # Phase 5 tasks & documents suite
+│   │   ├── verify-phase6.js                # Phase 6 AI & workflows suite
+│   │   ├── verify-integration.js           # Cross-module integration suite
+│   │   └── verify-seed.js                  # Database seeder verification
+│   ├── uploads/                            # User attachment storage (.gitkeep)
 │   ├── Dockerfile                          # Production container specification
 │   └── package.json                        # Backend dependencies & test scripts
 │
-├── PHASE_1_ARCHITECTURE.md                 # Master architecture blueprint
+├── docs/                                   # Platform documentation
+│   └── PHASE_1_ARCHITECTURE.md             # Master architecture blueprint
+├── .env.example                            # Root environment template
+├── .gitignore                              # Comprehensive repository ignore rules
 └── README.md                               # Project documentation
 ```
 

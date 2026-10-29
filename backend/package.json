@@ -14,7 +14,8 @@
     "test:api": "node test/verify-phase3.js",
     "test:seed": "node test/verify-seed.js",
     "test:integration": "node test/verify-integration.js",
-    "test:phase5": "node test/verify-phase5.js"
+    "test:phase5": "node test/verify-phase5.js",
+    "test:phase6": "node test/verify-phase6.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

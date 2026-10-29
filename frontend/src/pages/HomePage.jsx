@@ -4,7 +4,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { checkApiHealth, checkDbHealth } from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import { 
   CheckCircle2, 
   XCircle, 
@@ -26,8 +25,8 @@ import {
 } from 'lucide-react';
 
 export function HomePage() {
-  const { isAuthenticated } = useAuth();
-  const [frontendStatus] = useState({ ok: true, message: 'React 19 + Vite running on :5173' });
+  const currentPort = typeof window !== 'undefined' && window.location.port ? window.location.port : '5173';
+  const [frontendStatus] = useState({ ok: true, message: `React 19 + Vite running on :${currentPort}` });
   const [backendStatus, setBackendStatus] = useState({ loading: true, ok: false, message: 'Checking...' });
   const [dbStatus, setDbStatus] = useState({ loading: true, ok: false, message: 'Checking...', database: null, error: null });
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -115,14 +114,14 @@ export function HomePage() {
       <main className="max-w-5xl mx-auto px-6 py-10 flex-1 w-full relative z-10">
         {/* Hero Section */}
         <div className="text-center mb-10 space-y-4">
-          <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 px-3 py-1 text-xs font-semibold">
-            Phase 5 — Core Product Modules Active: Documents & Tasks
+          <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-500/10 px-3 py-1 text-xs font-semibold">
+            Phase 6 — Workflow Automation & Local AI Studio Active
           </Badge>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
             AI Productivity Platform
           </h1>
           <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-            Enterprise foundation powered by Node.js, Express, MongoDB Mongoose ODM, and full workspace modules for collaborative Document Management and interactive Task Kanban planning.
+            Enterprise foundation powered by Node.js, Express, MongoDB Mongoose ODM, full Document & Task workspaces, deterministic Workflow Automation pipelines, and zero-external-key Local AI Studio.
           </p>
 
           {/* Quick Action Navigation Buttons */}
@@ -136,10 +135,16 @@ export function HomePage() {
                     <ArrowRight className="h-4 w-4 ml-1.5" />
                   </Button>
                 </Link>
-                <Link to="/documents">
-                  <Button variant="outline" className="border-slate-700 bg-slate-900/60 hover:bg-slate-800 text-slate-200 px-4 py-2.5 text-xs">
-                    <FileText className="h-4 w-4 mr-1.5 text-blue-400" />
-                    <span>Documents Workspace</span>
+                <Link to="/workflows">
+                  <Button variant="outline" className="border-purple-600/40 bg-purple-950/20 hover:bg-purple-900/40 text-purple-300 px-4 py-2.5 text-xs">
+                    <FolderGit2 className="h-4 w-4 mr-1.5 text-purple-400" />
+                    <span>Workflow Pipelines</span>
+                  </Button>
+                </Link>
+                <Link to="/ai">
+                  <Button variant="outline" className="border-indigo-600/40 bg-indigo-950/20 hover:bg-indigo-900/40 text-indigo-300 px-4 py-2.5 text-xs">
+                    <FileText className="h-4 w-4 mr-1.5 text-indigo-400" />
+                    <span>AI Studio</span>
                   </Button>
                 </Link>
                 <Link to="/tasks">

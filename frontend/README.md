@@ -1,16 +1,82 @@
-# React + Vite
+# Frontend Web Client — AI Productivity Platform ⚡
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Modern, reactive single-page client built with **React 19**, **Vite**, and **Tailwind CSS**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🏗️ Architecture & Modules
 
-## React Compiler
+The frontend follows a domain-driven, component-based layout:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```text
+frontend/
+├── public/                 # Static public assets
+│   └── favicon.svg         # Application brand icon
+├── src/
+│   ├── components/         # Reusable presentation & layout components
+│   │   ├── ui/             # Design-system primitives (Badge, Button, Card)
+│   │   ├── Navbar.jsx      # Global navigation header & user status
+│   │   └── ProtectedRoute.jsx # Route-guard requiring authentication
+│   ├── context/            # React Context providers
+│   │   └── AuthContext.jsx # Global JWT session & user state
+│   ├── layouts/            # Application layout wrappers
+│   │   └── RootLayout.jsx  # Main shell with navigation & notifications
+│   ├── lib/                # Shared utilities
+│   │   └── utils.js        # Class name merger (clsx + tailwind-merge)
+│   ├── pages/              # Routed feature views
+│   │   ├── HomePage.jsx    # Landing page & live diagnostics health hub
+│   │   ├── Login.jsx       # User authentication & token storage
+│   │   ├── Signup.jsx      # New account registration
+│   │   ├── Dashboard.jsx   # Metrics, activity overview & quick navigation
+│   │   ├── Documents.jsx   # Document editor, markdown viewer & attachments
+│   │   ├── Tasks.jsx       # Sprint task management (Kanban & list views)
+│   │   ├── Workflows.jsx   # Automation state machine workflow manager
+│   │   ├── AIAssistant.jsx # AI assistant (chat, summarizer, task generator)
+│   │   └── Profile.jsx     # User settings & session management
+│   ├── services/           # Backend API integration layer
+│   │   ├── api.js          # Unified Axios-like Fetch wrapper & endpoints
+│   │   └── authService.js  # Token management & credential caching
+│   ├── App.jsx             # Main router declaration
+│   ├── index.css           # Tailwind design tokens & dark-theme base styles
+│   └── main.jsx            # React root DOM mount
+├── .env.example            # Environment configuration template
+├── package.json            # Client dependencies & scripts
+├── tailwind.config.js      # Tailwind CSS theme configuration
+└── vite.config.js          # Vite build & proxy configuration
+```
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## 🚀 Getting Started
+
+### 1. Configure Environment
+Create a `.env` file from the example:
+```bash
+cp .env.example .env
+```
+Default content:
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Run Development Server
+```bash
+npm run dev
+```
+Launches development server on `http://localhost:5173`.
+
+### 4. Build for Production
+```bash
+npm run build
+```
+
+### 5. Linting
+```bash
+npm run lint
+```
+Runs high-performance Oxlint rules across the codebase.

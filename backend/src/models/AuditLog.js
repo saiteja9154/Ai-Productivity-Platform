@@ -15,7 +15,7 @@ const auditLogSchema = new mongoose.Schema(
     entityType: {
       type: String,
       required: [true, 'Entity type is required'],
-      enum: ['User', 'Team', 'Document', 'Task', 'Workflow', 'WorkflowStep']
+      enum: ['User', 'Team', 'Document', 'Task', 'Workflow', 'WorkflowStep', 'WorkflowExecution']
     },
     entityId: {
       type: mongoose.Schema.Types.Mixed,

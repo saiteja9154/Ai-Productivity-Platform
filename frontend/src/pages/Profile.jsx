@@ -68,7 +68,7 @@ export function Profile() {
       await refreshProfile();
       setSuccessMessage('Profile reloaded from server.');
     } catch (err) {
-      setErrorMessage('Failed to reload profile.');
+      setErrorMessage(err.message || 'Failed to reload profile.');
     } finally {
       setIsRefreshing(false);
     }

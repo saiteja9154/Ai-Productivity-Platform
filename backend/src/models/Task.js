@@ -57,6 +57,18 @@ const taskSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Document',
       default: null
+    },
+    sourceWorkflow: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Workflow',
+      default: null,
+      index: true
+    },
+    sourceExecution: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'WorkflowExecution',
+      default: null,
+      index: true
     }
   },
   {

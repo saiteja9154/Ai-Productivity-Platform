@@ -5,6 +5,11 @@ import {
   createWorkflow,
   updateWorkflow,
   deleteWorkflow,
+  activateWorkflow,
+  deactivateWorkflow,
+  runWorkflow,
+  getWorkflowExecutions,
+  getExecutionById,
   getWorkflowSteps,
   addWorkflowStep,
   updateWorkflowStep,
@@ -26,10 +31,28 @@ router.route('/')
   .get(getWorkflows)
   .post(validateCreateWorkflow, validate, createWorkflow);
 
+// Execution detail lookup
+router.route('/executions/:executionId')
+  .get(getExecutionById);
+
 router.route('/:id')
   .get(validateWorkflowId, validate, getWorkflowById)
   .put(validateUpdateWorkflow, validate, updateWorkflow)
+  .patch(validateUpdateWorkflow, validate, updateWorkflow)
   .delete(validateWorkflowId, validate, deleteWorkflow);
+
+// Phase 6 Actions
+router.route('/:id/activate')
+  .post(validateWorkflowId, validate, activateWorkflow);
+
+router.route('/:id/deactivate')
+  .post(validateWorkflowId, validate, deactivateWorkflow);
+
+router.route('/:id/run')
+  .post(validateWorkflowId, validate, runWorkflow);
+
+router.route('/:id/executions')
+  .get(validateWorkflowId, validate, getWorkflowExecutions);
 
 // Workflow Steps Sub-routes
 router.route('/:id/steps')
@@ -41,3 +64,4 @@ router.route('/:id/steps/:stepId')
   .delete(validateStepId, validate, deleteWorkflowStep);
 
 export default router;
+
